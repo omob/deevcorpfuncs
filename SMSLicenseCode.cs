@@ -19,6 +19,8 @@ namespace deevcorpfuncs
             ILogger log)
         {
 
+            log.LogInformation("Called SmsLicense function");
+
             var index = licenseFileContents.IndexOf("SecretCode");
             var licenseCode = licenseFileContents.Substring(index);
 
@@ -26,19 +28,20 @@ namespace deevcorpfuncs
             var recipient = Environment.GetEnvironmentVariable("Recipient");
 
             // Send SMS to recipient
-            // var response = SendSMS(message, recipient);
-            log.LogInformation($"Got order and sent code to {recipient}");
-            // log.LogInformation(response.ToString());
+            SendSMS(message, recipient, true);
         }
 
-        public static MessageResource SendSMS(string text, string recipient)
+        public static void SendSMS(string text, string recipient, bool isSending = false)
         {
-            InitializeTwilio();
-            return MessageResource.Create(
-                body: text,
-                from: new Twilio.Types.PhoneNumber(Environment.GetEnvironmentVariable("TwilioNumber")),
-                to: new Twilio.Types.PhoneNumber(recipient)
-            );
+            if (isSending)
+            {
+                InitializeTwilio();
+                MessageResource.Create(
+                    body: text,
+                    from: new Twilio.Types.PhoneNumber(Environment.GetEnvironmentVariable("TwilioNumber")),
+                    to: new Twilio.Types.PhoneNumber(recipient)
+                );
+            }
         }
 
         public static void InitializeTwilio()
